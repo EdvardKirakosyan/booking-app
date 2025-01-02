@@ -3,7 +3,6 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strings"
 )
 
 var conferenceName string = "GO conference"
@@ -11,7 +10,14 @@ var conferenceName string = "GO conference"
 const conferenceTickets int = 50
 
 var remainingTickets int = 50
-var bookings = []string{}
+var bookings = make([]UserData, 0)
+
+type UserData struct {
+	firstName       string
+	lastName        string
+	email           string
+	numberOfTickets int
+}
 
 func main() {
 	greetUsers()
@@ -55,8 +61,7 @@ func greetUsers() {
 func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
+		firstNames = append(firstNames, booking.firstName)
 	}
 	return firstNames
 }
@@ -84,7 +89,18 @@ func getUserInput() (string, string, string, int) {
 
 func bookTickets(userTickets int, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - userTickets
-	bookings = append(bookings, firstName+" "+lastName)
+
+	var userData = UserData{
+		firstName:       firstName,
+		lastName:        lastName,
+		email:           email,
+		numberOfTickets: userTickets,
+	}
+
+	bookings = append(bookings, userData)
+
+	fmt.Printf("list %v \n", bookings)
+
 	fmt.Printf("thank you %v %v for booking %v tickets.\nYou will received them on %v\n", firstName, lastName, userTickets, email)
 	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
 }
