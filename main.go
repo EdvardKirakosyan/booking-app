@@ -10,22 +10,17 @@ var conferenceName string = "GO conference"
 const conferenceTickets int = 50
 
 var remainingTickets int = 50
-
 var bookings = []string{}
 
 func main() {
-
 	greetUsers()
 
 	for {
 		firstName, lastName, email, userTickets := getUserInput()
-
 		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets)
 
 		if isValidName && isValidEmail && isValidTicketNumber {
-
 			bookTickets(userTickets, firstName, lastName, email)
-
 			firstNames := getFirstNames()
 
 			fmt.Printf("There are firstNames: %v\n", firstNames)
@@ -96,7 +91,6 @@ func getUserInput() (string, string, string, int) {
 func bookTickets(userTickets int, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - userTickets
 	bookings = append(bookings, firstName+" "+lastName)
-
 	fmt.Printf("thank you %v %v for booking %v tickets.\nYou will received them on %v\n", firstName, lastName, userTickets, email)
 	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
 }
