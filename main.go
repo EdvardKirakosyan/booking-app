@@ -3,6 +3,7 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -20,39 +21,41 @@ type UserData struct {
 	numberOfTickets int
 }
 
+var wg = sync.WaitGroup{}
+
 func main() {
 	greetUsers()
 
-	for {
-		firstName, lastName, email, userTickets := getUserInput()
-		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+	firstName, lastName, email, userTickets := getUserInput()
+	isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
-		if isValidName && isValidEmail && isValidTicketNumber {
-			bookTickets(userTickets, firstName, lastName, email)
-			sendTicket(userTickets, firstName, lastName, email)
+	if isValidName && isValidEmail && isValidTicketNumber {
+		bookTickets(userTickets, firstName, lastName, email)
 
-			firstNames := getFirstNames()
+		wg.Add(1)
+		go sendTicket(userTickets, firstName, lastName, email)
 
-			fmt.Printf("There are firstNames: %v\n", firstNames)
+		firstNames := getFirstNames()
 
-			if remainingTickets == 0 {
-				fmt.Println("conf is over")
-				break
-			}
-		} else {
-			if !isValidName {
-				fmt.Println("fist & last you entered is to short")
-			}
+		fmt.Printf("There are firstNames: %v\n", firstNames)
 
-			if !isValidEmail {
-				fmt.Println("email you entered is without @")
-			}
+		if remainingTickets == 0 {
+			fmt.Println("conf is over")
+		}
+	} else {
+		if !isValidName {
+			fmt.Println("fist & last you entered is to short")
+		}
 
-			if !isValidTicketNumber {
-				fmt.Println("number wrong")
-			}
+		if !isValidEmail {
+			fmt.Println("email you entered is without @")
+		}
+
+		if !isValidTicketNumber {
+			fmt.Println("number wrong")
 		}
 	}
+	wg.Wait()
 }
 
 func greetUsers() {
@@ -114,4 +117,6 @@ func sendTicket(userTickets int, firstName string, lastName string, email string
 	fmt.Println("#############################")
 	fmt.Printf("Send ticket %v sended on %v\n", ticket, email)
 	fmt.Println("#############################")
+
+	wg.Done()
 }
